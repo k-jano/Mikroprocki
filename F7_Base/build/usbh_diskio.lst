@@ -1,0 +1,789 @@
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"usbh_diskio.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.USBH_initialize,"ax",%progbits
+  18              		.align	1
+  19              		.global	USBH_initialize
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-sp-d16
+  25              	USBH_initialize:
+  26              	.LFB141:
+  27              		.file 1 "Src/usbh_diskio.c"
+   1:Src/usbh_diskio.c **** /**
+   2:Src/usbh_diskio.c ****   ******************************************************************************
+   3:Src/usbh_diskio.c ****   * @file    usbh_diskio.c (based on usbh_diskio_template.c v2.0.2)
+   4:Src/usbh_diskio.c ****   * @brief   USB Host Disk I/O driver
+   5:Src/usbh_diskio.c ****   ******************************************************************************
+   6:Src/usbh_diskio.c ****   * This notice applies to any and all portions of this file
+   7:Src/usbh_diskio.c ****   * that are not between comment pairs USER CODE BEGIN and
+   8:Src/usbh_diskio.c ****   * USER CODE END. Other portions of this file, whether 
+   9:Src/usbh_diskio.c ****   * inserted by the user or by software development tools
+  10:Src/usbh_diskio.c ****   * are owned by their respective copyright owners.
+  11:Src/usbh_diskio.c ****   *
+  12:Src/usbh_diskio.c ****   * Copyright (c) 2018 STMicroelectronics International N.V. 
+  13:Src/usbh_diskio.c ****   * All rights reserved.
+  14:Src/usbh_diskio.c ****   *
+  15:Src/usbh_diskio.c ****   * Redistribution and use in source and binary forms, with or without 
+  16:Src/usbh_diskio.c ****   * modification, are permitted, provided that the following conditions are met:
+  17:Src/usbh_diskio.c ****   *
+  18:Src/usbh_diskio.c ****   * 1. Redistribution of source code must retain the above copyright notice, 
+  19:Src/usbh_diskio.c ****   *    this list of conditions and the following disclaimer.
+  20:Src/usbh_diskio.c ****   * 2. Redistributions in binary form must reproduce the above copyright notice,
+  21:Src/usbh_diskio.c ****   *    this list of conditions and the following disclaimer in the documentation
+  22:Src/usbh_diskio.c ****   *    and/or other materials provided with the distribution.
+  23:Src/usbh_diskio.c ****   * 3. Neither the name of STMicroelectronics nor the names of other 
+  24:Src/usbh_diskio.c ****   *    contributors to this software may be used to endorse or promote products 
+  25:Src/usbh_diskio.c ****   *    derived from this software without specific written permission.
+  26:Src/usbh_diskio.c ****   * 4. This software, including modifications and/or derivative works of this 
+  27:Src/usbh_diskio.c ****   *    software, must execute solely and exclusively on microcontroller or
+  28:Src/usbh_diskio.c ****   *    microprocessor devices manufactured by or for STMicroelectronics.
+  29:Src/usbh_diskio.c ****   * 5. Redistribution and use of this software other than as permitted under 
+  30:Src/usbh_diskio.c ****   *    this license is void and will automatically terminate your rights under 
+  31:Src/usbh_diskio.c ****   *    this license. 
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s 			page 2
+
+
+  32:Src/usbh_diskio.c ****   *
+  33:Src/usbh_diskio.c ****   * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
+  34:Src/usbh_diskio.c ****   * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
+  35:Src/usbh_diskio.c ****   * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+  36:Src/usbh_diskio.c ****   * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
+  37:Src/usbh_diskio.c ****   * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
+  38:Src/usbh_diskio.c ****   * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  39:Src/usbh_diskio.c ****   * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  40:Src/usbh_diskio.c ****   * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+  41:Src/usbh_diskio.c ****   * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+  42:Src/usbh_diskio.c ****   * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+  43:Src/usbh_diskio.c ****   * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+  44:Src/usbh_diskio.c ****   * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  45:Src/usbh_diskio.c ****   *
+  46:Src/usbh_diskio.c ****   ******************************************************************************
+  47:Src/usbh_diskio.c ****   */
+  48:Src/usbh_diskio.c **** /* USER CODE BEGIN firstSection */ 
+  49:Src/usbh_diskio.c **** /* can be used to modify / undefine following code or add new definitions */
+  50:Src/usbh_diskio.c **** /* USER CODE END firstSection */ 
+  51:Src/usbh_diskio.c **** 
+  52:Src/usbh_diskio.c **** /* Includes ------------------------------------------------------------------*/
+  53:Src/usbh_diskio.c **** #include "ff_gen_drv.h"
+  54:Src/usbh_diskio.c **** #include "usbh_diskio.h"
+  55:Src/usbh_diskio.c **** 
+  56:Src/usbh_diskio.c **** /* Private typedef -----------------------------------------------------------*/
+  57:Src/usbh_diskio.c **** /* Private define ------------------------------------------------------------*/
+  58:Src/usbh_diskio.c **** 
+  59:Src/usbh_diskio.c **** #define USB_DEFAULT_BLOCK_SIZE 512
+  60:Src/usbh_diskio.c **** 
+  61:Src/usbh_diskio.c **** /* Private variables ---------------------------------------------------------*/
+  62:Src/usbh_diskio.c **** extern USBH_HandleTypeDef  hUSB_Host;
+  63:Src/usbh_diskio.c **** 
+  64:Src/usbh_diskio.c **** /* Private function prototypes -----------------------------------------------*/
+  65:Src/usbh_diskio.c **** DSTATUS USBH_initialize (BYTE);
+  66:Src/usbh_diskio.c **** DSTATUS USBH_status (BYTE);
+  67:Src/usbh_diskio.c **** DRESULT USBH_read (BYTE, BYTE*, DWORD, UINT);
+  68:Src/usbh_diskio.c **** 
+  69:Src/usbh_diskio.c **** #if _USE_WRITE == 1
+  70:Src/usbh_diskio.c ****   DRESULT USBH_write (BYTE, const BYTE*, DWORD, UINT);
+  71:Src/usbh_diskio.c **** #endif /* _USE_WRITE == 1 */
+  72:Src/usbh_diskio.c **** 
+  73:Src/usbh_diskio.c **** #if _USE_IOCTL == 1
+  74:Src/usbh_diskio.c ****   DRESULT USBH_ioctl (BYTE, BYTE, void*);
+  75:Src/usbh_diskio.c **** #endif /* _USE_IOCTL == 1 */
+  76:Src/usbh_diskio.c **** 
+  77:Src/usbh_diskio.c **** const Diskio_drvTypeDef  USBH_Driver =
+  78:Src/usbh_diskio.c **** {
+  79:Src/usbh_diskio.c ****   USBH_initialize,
+  80:Src/usbh_diskio.c ****   USBH_status,
+  81:Src/usbh_diskio.c ****   USBH_read,
+  82:Src/usbh_diskio.c **** #if  _USE_WRITE == 1
+  83:Src/usbh_diskio.c ****   USBH_write,
+  84:Src/usbh_diskio.c **** #endif /* _USE_WRITE == 1 */
+  85:Src/usbh_diskio.c **** #if  _USE_IOCTL == 1
+  86:Src/usbh_diskio.c ****   USBH_ioctl,
+  87:Src/usbh_diskio.c **** #endif /* _USE_IOCTL == 1 */
+  88:Src/usbh_diskio.c **** };
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s 			page 3
+
+
+  89:Src/usbh_diskio.c **** 
+  90:Src/usbh_diskio.c **** /* USER CODE BEGIN beforeFunctionSection */
+  91:Src/usbh_diskio.c **** /* can be used to modify / undefine following code or add new code */
+  92:Src/usbh_diskio.c **** /* USER CODE END beforeFunctionSection */
+  93:Src/usbh_diskio.c **** 
+  94:Src/usbh_diskio.c **** /* Private functions ---------------------------------------------------------*/
+  95:Src/usbh_diskio.c **** 
+  96:Src/usbh_diskio.c **** /**
+  97:Src/usbh_diskio.c ****   * @brief  Initializes a Drive
+  98:Src/usbh_diskio.c ****   * @param  lun : lun id
+  99:Src/usbh_diskio.c ****   * @retval DSTATUS: Operation status
+ 100:Src/usbh_diskio.c ****   */
+ 101:Src/usbh_diskio.c **** DSTATUS USBH_initialize(BYTE lun)
+ 102:Src/usbh_diskio.c **** {
+  28              		.loc 1 102 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  33              	.LVL0:
+ 103:Src/usbh_diskio.c ****   /* CAUTION : USB Host library has to be initialized in the application */
+ 104:Src/usbh_diskio.c **** 
+ 105:Src/usbh_diskio.c ****   return RES_OK;
+ 106:Src/usbh_diskio.c **** }
+  34              		.loc 1 106 0
+  35 0000 0020     		movs	r0, #0
+  36              	.LVL1:
+  37 0002 7047     		bx	lr
+  38              		.cfi_endproc
+  39              	.LFE141:
+  41              		.section	.text.USBH_status,"ax",%progbits
+  42              		.align	1
+  43              		.global	USBH_status
+  44              		.syntax unified
+  45              		.thumb
+  46              		.thumb_func
+  47              		.fpu fpv5-sp-d16
+  49              	USBH_status:
+  50              	.LFB142:
+ 107:Src/usbh_diskio.c **** 
+ 108:Src/usbh_diskio.c **** /**
+ 109:Src/usbh_diskio.c ****   * @brief  Gets Disk Status
+ 110:Src/usbh_diskio.c ****   * @param  lun : lun id
+ 111:Src/usbh_diskio.c ****   * @retval DSTATUS: Operation status
+ 112:Src/usbh_diskio.c ****   */
+ 113:Src/usbh_diskio.c **** DSTATUS USBH_status(BYTE lun)
+ 114:Src/usbh_diskio.c **** {
+  51              		.loc 1 114 0
+  52              		.cfi_startproc
+  53              		@ args = 0, pretend = 0, frame = 0
+  54              		@ frame_needed = 0, uses_anonymous_args = 0
+  55              	.LVL2:
+  56 0000 08B5     		push	{r3, lr}
+  57              	.LCFI0:
+  58              		.cfi_def_cfa_offset 8
+  59              		.cfi_offset 3, -8
+  60              		.cfi_offset 14, -4
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s 			page 4
+
+
+  61              	.LVL3:
+ 115:Src/usbh_diskio.c ****   DRESULT res = RES_ERROR;
+ 116:Src/usbh_diskio.c **** 
+ 117:Src/usbh_diskio.c ****   if(USBH_MSC_UnitIsReady(&hUSB_Host, lun))
+  62              		.loc 1 117 0
+  63 0002 0146     		mov	r1, r0
+  64 0004 0348     		ldr	r0, .L7
+  65              	.LVL4:
+  66 0006 FFF7FEFF 		bl	USBH_MSC_UnitIsReady
+  67              	.LVL5:
+  68 000a 08B9     		cbnz	r0, .L6
+ 118:Src/usbh_diskio.c ****   {
+ 119:Src/usbh_diskio.c ****     res = RES_OK;
+ 120:Src/usbh_diskio.c ****   }
+ 121:Src/usbh_diskio.c ****   else
+ 122:Src/usbh_diskio.c ****   {
+ 123:Src/usbh_diskio.c ****     res = RES_ERROR;
+  69              		.loc 1 123 0
+  70 000c 0120     		movs	r0, #1
+  71              	.LVL6:
+ 124:Src/usbh_diskio.c ****   }
+ 125:Src/usbh_diskio.c **** 
+ 126:Src/usbh_diskio.c ****   return res;
+ 127:Src/usbh_diskio.c **** }
+  72              		.loc 1 127 0
+  73 000e 08BD     		pop	{r3, pc}
+  74              	.LVL7:
+  75              	.L6:
+ 119:Src/usbh_diskio.c ****   }
+  76              		.loc 1 119 0
+  77 0010 0020     		movs	r0, #0
+  78 0012 08BD     		pop	{r3, pc}
+  79              	.L8:
+  80              		.align	2
+  81              	.L7:
+  82 0014 00000000 		.word	hUsbHostFS
+  83              		.cfi_endproc
+  84              	.LFE142:
+  86              		.section	.text.USBH_read,"ax",%progbits
+  87              		.align	1
+  88              		.global	USBH_read
+  89              		.syntax unified
+  90              		.thumb
+  91              		.thumb_func
+  92              		.fpu fpv5-sp-d16
+  94              	USBH_read:
+  95              	.LFB143:
+ 128:Src/usbh_diskio.c **** 
+ 129:Src/usbh_diskio.c **** /* USER CODE BEGIN beforeReadSection */
+ 130:Src/usbh_diskio.c **** /* can be used to modify previous code / undefine following code / add new code */
+ 131:Src/usbh_diskio.c **** /* USER CODE END beforeReadSection */
+ 132:Src/usbh_diskio.c **** 
+ 133:Src/usbh_diskio.c **** /**
+ 134:Src/usbh_diskio.c ****   * @brief  Reads Sector(s)
+ 135:Src/usbh_diskio.c ****   * @param  lun : lun id
+ 136:Src/usbh_diskio.c ****   * @param  *buff: Data buffer to store read data
+ 137:Src/usbh_diskio.c ****   * @param  sector: Sector address (LBA)
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s 			page 5
+
+
+ 138:Src/usbh_diskio.c ****   * @param  count: Number of sectors to read (1..128)
+ 139:Src/usbh_diskio.c ****   * @retval DRESULT: Operation result
+ 140:Src/usbh_diskio.c ****   */
+ 141:Src/usbh_diskio.c **** DRESULT USBH_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
+ 142:Src/usbh_diskio.c **** {
+  96              		.loc 1 142 0
+  97              		.cfi_startproc
+  98              		@ args = 0, pretend = 0, frame = 56
+  99              		@ frame_needed = 0, uses_anonymous_args = 0
+ 100              	.LVL8:
+ 101 0000 10B5     		push	{r4, lr}
+ 102              	.LCFI1:
+ 103              		.cfi_def_cfa_offset 8
+ 104              		.cfi_offset 4, -8
+ 105              		.cfi_offset 14, -4
+ 106 0002 90B0     		sub	sp, sp, #64
+ 107              	.LCFI2:
+ 108              		.cfi_def_cfa_offset 72
+ 109 0004 0446     		mov	r4, r0
+ 110              	.LVL9:
+ 143:Src/usbh_diskio.c ****   DRESULT res = RES_ERROR;
+ 144:Src/usbh_diskio.c ****   MSC_LUNTypeDef info;
+ 145:Src/usbh_diskio.c **** 
+ 146:Src/usbh_diskio.c ****   if(USBH_MSC_Read(&hUSB_Host, lun, sector, buff, count) == USBH_OK)
+ 111              		.loc 1 146 0
+ 112 0006 0093     		str	r3, [sp]
+ 113 0008 0B46     		mov	r3, r1
+ 114              	.LVL10:
+ 115 000a 0146     		mov	r1, r0
+ 116              	.LVL11:
+ 117 000c 0B48     		ldr	r0, .L17
+ 118              	.LVL12:
+ 119 000e FFF7FEFF 		bl	USBH_MSC_Read
+ 120              	.LVL13:
+ 121 0012 10B9     		cbnz	r0, .L16
+ 147:Src/usbh_diskio.c ****   {
+ 148:Src/usbh_diskio.c ****     res = RES_OK;
+ 122              		.loc 1 148 0
+ 123 0014 0020     		movs	r0, #0
+ 124              	.L10:
+ 125              	.LVL14:
+ 149:Src/usbh_diskio.c ****   }
+ 150:Src/usbh_diskio.c ****   else
+ 151:Src/usbh_diskio.c ****   {
+ 152:Src/usbh_diskio.c ****     USBH_MSC_GetLUNInfo(&hUSB_Host, lun, &info);
+ 153:Src/usbh_diskio.c **** 
+ 154:Src/usbh_diskio.c ****     switch (info.sense.asc)
+ 155:Src/usbh_diskio.c ****     {
+ 156:Src/usbh_diskio.c ****     case SCSI_ASC_LOGICAL_UNIT_NOT_READY:
+ 157:Src/usbh_diskio.c ****     case SCSI_ASC_MEDIUM_NOT_PRESENT:
+ 158:Src/usbh_diskio.c ****     case SCSI_ASC_NOT_READY_TO_READY_CHANGE:
+ 159:Src/usbh_diskio.c ****       USBH_ErrLog ("USB Disk is not ready!");
+ 160:Src/usbh_diskio.c ****       res = RES_NOTRDY;
+ 161:Src/usbh_diskio.c ****       break; 
+ 162:Src/usbh_diskio.c **** 
+ 163:Src/usbh_diskio.c ****     default:
+ 164:Src/usbh_diskio.c ****       res = RES_ERROR;
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s 			page 6
+
+
+ 165:Src/usbh_diskio.c ****       break;
+ 166:Src/usbh_diskio.c ****     }
+ 167:Src/usbh_diskio.c ****   }
+ 168:Src/usbh_diskio.c **** 
+ 169:Src/usbh_diskio.c ****   return res;
+ 170:Src/usbh_diskio.c **** }
+ 126              		.loc 1 170 0
+ 127 0016 10B0     		add	sp, sp, #64
+ 128              	.LCFI3:
+ 129              		.cfi_remember_state
+ 130              		.cfi_def_cfa_offset 8
+ 131              		@ sp needed
+ 132 0018 10BD     		pop	{r4, pc}
+ 133              	.LVL15:
+ 134              	.L16:
+ 135              	.LCFI4:
+ 136              		.cfi_restore_state
+ 152:Src/usbh_diskio.c **** 
+ 137              		.loc 1 152 0
+ 138 001a 03AA     		add	r2, sp, #12
+ 139 001c 2146     		mov	r1, r4
+ 140 001e 0748     		ldr	r0, .L17
+ 141 0020 FFF7FEFF 		bl	USBH_MSC_GetLUNInfo
+ 142              	.LVL16:
+ 154:Src/usbh_diskio.c ****     {
+ 143              		.loc 1 154 0
+ 144 0024 9DF81930 		ldrb	r3, [sp, #25]	@ zero_extendqisi2
+ 145 0028 282B     		cmp	r3, #40
+ 146 002a 05D0     		beq	.L11
+ 147 002c 3A2B     		cmp	r3, #58
+ 148 002e 03D0     		beq	.L11
+ 149 0030 042B     		cmp	r3, #4
+ 150 0032 01D0     		beq	.L11
+ 164:Src/usbh_diskio.c ****       break;
+ 151              		.loc 1 164 0
+ 152 0034 0120     		movs	r0, #1
+ 153 0036 EEE7     		b	.L10
+ 154              	.L11:
+ 160:Src/usbh_diskio.c ****       break; 
+ 155              		.loc 1 160 0
+ 156 0038 0320     		movs	r0, #3
+ 157 003a ECE7     		b	.L10
+ 158              	.L18:
+ 159              		.align	2
+ 160              	.L17:
+ 161 003c 00000000 		.word	hUsbHostFS
+ 162              		.cfi_endproc
+ 163              	.LFE143:
+ 165              		.section	.text.USBH_ioctl,"ax",%progbits
+ 166              		.align	1
+ 167              		.global	USBH_ioctl
+ 168              		.syntax unified
+ 169              		.thumb
+ 170              		.thumb_func
+ 171              		.fpu fpv5-sp-d16
+ 173              	USBH_ioctl:
+ 174              	.LFB145:
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s 			page 7
+
+
+ 171:Src/usbh_diskio.c **** 
+ 172:Src/usbh_diskio.c **** /* USER CODE BEGIN beforeWriteSection */
+ 173:Src/usbh_diskio.c **** /* can be used to modify previous code / undefine following code / add new code */
+ 174:Src/usbh_diskio.c **** /* USER CODE END beforeWriteSection */
+ 175:Src/usbh_diskio.c **** 
+ 176:Src/usbh_diskio.c **** /**
+ 177:Src/usbh_diskio.c ****   * @brief  Writes Sector(s)
+ 178:Src/usbh_diskio.c ****   * @param  lun : lun id
+ 179:Src/usbh_diskio.c ****   * @param  *buff: Data to be written
+ 180:Src/usbh_diskio.c ****   * @param  sector: Sector address (LBA)
+ 181:Src/usbh_diskio.c ****   * @param  count: Number of sectors to write (1..128)
+ 182:Src/usbh_diskio.c ****   * @retval DRESULT: Operation result
+ 183:Src/usbh_diskio.c ****   */
+ 184:Src/usbh_diskio.c **** #if _USE_WRITE == 1
+ 185:Src/usbh_diskio.c **** DRESULT USBH_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
+ 186:Src/usbh_diskio.c **** {
+ 187:Src/usbh_diskio.c ****   DRESULT res = RES_ERROR;
+ 188:Src/usbh_diskio.c ****   MSC_LUNTypeDef info;
+ 189:Src/usbh_diskio.c **** 
+ 190:Src/usbh_diskio.c ****   if(USBH_MSC_Write(&hUSB_Host, lun, sector, (BYTE *)buff, count) == USBH_OK)
+ 191:Src/usbh_diskio.c ****   {
+ 192:Src/usbh_diskio.c ****     res = RES_OK;
+ 193:Src/usbh_diskio.c ****   }
+ 194:Src/usbh_diskio.c ****   else
+ 195:Src/usbh_diskio.c ****   {
+ 196:Src/usbh_diskio.c ****     USBH_MSC_GetLUNInfo(&hUSB_Host, lun, &info);
+ 197:Src/usbh_diskio.c **** 
+ 198:Src/usbh_diskio.c ****     switch (info.sense.asc)
+ 199:Src/usbh_diskio.c ****     {
+ 200:Src/usbh_diskio.c ****     case SCSI_ASC_WRITE_PROTECTED:
+ 201:Src/usbh_diskio.c ****       USBH_ErrLog("USB Disk is Write protected!");
+ 202:Src/usbh_diskio.c ****       res = RES_WRPRT;
+ 203:Src/usbh_diskio.c ****       break;
+ 204:Src/usbh_diskio.c **** 
+ 205:Src/usbh_diskio.c ****     case SCSI_ASC_LOGICAL_UNIT_NOT_READY:
+ 206:Src/usbh_diskio.c ****     case SCSI_ASC_MEDIUM_NOT_PRESENT:
+ 207:Src/usbh_diskio.c ****     case SCSI_ASC_NOT_READY_TO_READY_CHANGE:
+ 208:Src/usbh_diskio.c ****       USBH_ErrLog("USB Disk is not ready!");
+ 209:Src/usbh_diskio.c ****       res = RES_NOTRDY;
+ 210:Src/usbh_diskio.c ****       break;
+ 211:Src/usbh_diskio.c **** 
+ 212:Src/usbh_diskio.c ****     default:
+ 213:Src/usbh_diskio.c ****       res = RES_ERROR;
+ 214:Src/usbh_diskio.c ****       break;
+ 215:Src/usbh_diskio.c ****     }
+ 216:Src/usbh_diskio.c ****   }
+ 217:Src/usbh_diskio.c **** 
+ 218:Src/usbh_diskio.c ****   return res;
+ 219:Src/usbh_diskio.c **** }
+ 220:Src/usbh_diskio.c **** #endif /* _USE_WRITE == 1 */
+ 221:Src/usbh_diskio.c **** 
+ 222:Src/usbh_diskio.c **** /* USER CODE BEGIN beforeIoctlSection */
+ 223:Src/usbh_diskio.c **** /* can be used to modify previous code / undefine following code / add new code */
+ 224:Src/usbh_diskio.c **** /* USER CODE END beforeIoctlSection */
+ 225:Src/usbh_diskio.c **** 
+ 226:Src/usbh_diskio.c **** /**
+ 227:Src/usbh_diskio.c ****   * @brief  I/O control operation
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s 			page 8
+
+
+ 228:Src/usbh_diskio.c ****   * @param  lun : lun id
+ 229:Src/usbh_diskio.c ****   * @param  cmd: Control code
+ 230:Src/usbh_diskio.c ****   * @param  *buff: Buffer to send/receive control data
+ 231:Src/usbh_diskio.c ****   * @retval DRESULT: Operation result
+ 232:Src/usbh_diskio.c ****   */
+ 233:Src/usbh_diskio.c **** #if _USE_IOCTL == 1
+ 234:Src/usbh_diskio.c **** DRESULT USBH_ioctl(BYTE lun, BYTE cmd, void *buff)
+ 235:Src/usbh_diskio.c **** {
+ 175              		.loc 1 235 0
+ 176              		.cfi_startproc
+ 177              		@ args = 0, pretend = 0, frame = 56
+ 178              		@ frame_needed = 0, uses_anonymous_args = 0
+ 179              	.LVL17:
+ 180 0000 10B5     		push	{r4, lr}
+ 181              	.LCFI5:
+ 182              		.cfi_def_cfa_offset 8
+ 183              		.cfi_offset 4, -8
+ 184              		.cfi_offset 14, -4
+ 185 0002 8EB0     		sub	sp, sp, #56
+ 186              	.LCFI6:
+ 187              		.cfi_def_cfa_offset 64
+ 188 0004 1446     		mov	r4, r2
+ 189              	.LVL18:
+ 236:Src/usbh_diskio.c ****   DRESULT res = RES_ERROR;
+ 237:Src/usbh_diskio.c ****   MSC_LUNTypeDef info;
+ 238:Src/usbh_diskio.c **** 
+ 239:Src/usbh_diskio.c ****   switch (cmd)
+ 190              		.loc 1 239 0
+ 191 0006 0329     		cmp	r1, #3
+ 192 0008 24D8     		bhi	.L26
+ 193 000a DFE801F0 		tbb	[pc, r1]
+ 194              	.L22:
+ 195 000e 02       		.byte	(.L21-.L22)/2
+ 196 000f 05       		.byte	(.L23-.L22)/2
+ 197 0010 0E       		.byte	(.L24-.L22)/2
+ 198 0011 18       		.byte	(.L25-.L22)/2
+ 199              		.p2align 1
+ 200              	.L21:
+ 240:Src/usbh_diskio.c ****   {
+ 241:Src/usbh_diskio.c ****   /* Make sure that no pending write process */
+ 242:Src/usbh_diskio.c ****   case CTRL_SYNC:
+ 243:Src/usbh_diskio.c ****     res = RES_OK;
+ 201              		.loc 1 243 0
+ 202 0012 0020     		movs	r0, #0
+ 203              	.LVL19:
+ 204              	.L20:
+ 244:Src/usbh_diskio.c ****     break;
+ 245:Src/usbh_diskio.c **** 
+ 246:Src/usbh_diskio.c ****   /* Get number of sectors on the disk (DWORD) */
+ 247:Src/usbh_diskio.c ****   case GET_SECTOR_COUNT :
+ 248:Src/usbh_diskio.c ****     if(USBH_MSC_GetLUNInfo(&hUSB_Host, lun, &info) == USBH_OK)
+ 249:Src/usbh_diskio.c ****     {
+ 250:Src/usbh_diskio.c ****       *(DWORD*)buff = info.capacity.block_nbr;
+ 251:Src/usbh_diskio.c ****       res = RES_OK;
+ 252:Src/usbh_diskio.c ****     }
+ 253:Src/usbh_diskio.c ****     else
+ 254:Src/usbh_diskio.c ****     {
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s 			page 9
+
+
+ 255:Src/usbh_diskio.c ****       res = RES_ERROR;
+ 256:Src/usbh_diskio.c ****     }
+ 257:Src/usbh_diskio.c ****     break;
+ 258:Src/usbh_diskio.c **** 
+ 259:Src/usbh_diskio.c ****   /* Get R/W sector size (WORD) */
+ 260:Src/usbh_diskio.c ****   case GET_SECTOR_SIZE :
+ 261:Src/usbh_diskio.c ****     if(USBH_MSC_GetLUNInfo(&hUSB_Host, lun, &info) == USBH_OK)
+ 262:Src/usbh_diskio.c ****     {
+ 263:Src/usbh_diskio.c ****       *(DWORD*)buff = info.capacity.block_size;
+ 264:Src/usbh_diskio.c ****       res = RES_OK;
+ 265:Src/usbh_diskio.c ****     }
+ 266:Src/usbh_diskio.c ****     else
+ 267:Src/usbh_diskio.c ****     {
+ 268:Src/usbh_diskio.c ****       res = RES_ERROR;
+ 269:Src/usbh_diskio.c ****     }
+ 270:Src/usbh_diskio.c ****     break;
+ 271:Src/usbh_diskio.c **** 
+ 272:Src/usbh_diskio.c ****     /* Get erase block size in unit of sector (DWORD) */
+ 273:Src/usbh_diskio.c ****   case GET_BLOCK_SIZE :
+ 274:Src/usbh_diskio.c **** 
+ 275:Src/usbh_diskio.c ****     if(USBH_MSC_GetLUNInfo(&hUSB_Host, lun, &info) == USBH_OK)
+ 276:Src/usbh_diskio.c ****     {
+ 277:Src/usbh_diskio.c ****       *(DWORD*)buff = info.capacity.block_size / USB_DEFAULT_BLOCK_SIZE;
+ 278:Src/usbh_diskio.c ****       res = RES_OK;
+ 279:Src/usbh_diskio.c ****     }
+ 280:Src/usbh_diskio.c ****     else
+ 281:Src/usbh_diskio.c ****     {
+ 282:Src/usbh_diskio.c ****       res = RES_ERROR;
+ 283:Src/usbh_diskio.c ****     }
+ 284:Src/usbh_diskio.c ****     break;
+ 285:Src/usbh_diskio.c **** 
+ 286:Src/usbh_diskio.c ****   default:
+ 287:Src/usbh_diskio.c ****     res = RES_PARERR;
+ 288:Src/usbh_diskio.c ****   }
+ 289:Src/usbh_diskio.c **** 
+ 290:Src/usbh_diskio.c ****   return res;
+ 291:Src/usbh_diskio.c **** }
+ 205              		.loc 1 291 0
+ 206 0014 0EB0     		add	sp, sp, #56
+ 207              	.LCFI7:
+ 208              		.cfi_remember_state
+ 209              		.cfi_def_cfa_offset 8
+ 210              		@ sp needed
+ 211 0016 10BD     		pop	{r4, pc}
+ 212              	.LVL20:
+ 213              	.L23:
+ 214              	.LCFI8:
+ 215              		.cfi_restore_state
+ 248:Src/usbh_diskio.c ****     {
+ 216              		.loc 1 248 0
+ 217 0018 01AA     		add	r2, sp, #4
+ 218              	.LVL21:
+ 219 001a 0146     		mov	r1, r0
+ 220              	.LVL22:
+ 221 001c 1148     		ldr	r0, .L31
+ 222              	.LVL23:
+ 223 001e FFF7FEFF 		bl	USBH_MSC_GetLUNInfo
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s 			page 10
+
+
+ 224              	.LVL24:
+ 225 0022 C8B9     		cbnz	r0, .L27
+ 250:Src/usbh_diskio.c ****       res = RES_OK;
+ 226              		.loc 1 250 0
+ 227 0024 029B     		ldr	r3, [sp, #8]
+ 228 0026 2360     		str	r3, [r4]
+ 229              	.LVL25:
+ 230 0028 F4E7     		b	.L20
+ 231              	.LVL26:
+ 232              	.L24:
+ 261:Src/usbh_diskio.c ****     {
+ 233              		.loc 1 261 0
+ 234 002a 01AA     		add	r2, sp, #4
+ 235              	.LVL27:
+ 236 002c 0146     		mov	r1, r0
+ 237              	.LVL28:
+ 238 002e 0D48     		ldr	r0, .L31
+ 239              	.LVL29:
+ 240 0030 FFF7FEFF 		bl	USBH_MSC_GetLUNInfo
+ 241              	.LVL30:
+ 242 0034 90B9     		cbnz	r0, .L28
+ 263:Src/usbh_diskio.c ****       res = RES_OK;
+ 243              		.loc 1 263 0
+ 244 0036 BDF80C30 		ldrh	r3, [sp, #12]
+ 245 003a 2360     		str	r3, [r4]
+ 246              	.LVL31:
+ 247 003c EAE7     		b	.L20
+ 248              	.LVL32:
+ 249              	.L25:
+ 275:Src/usbh_diskio.c ****     {
+ 250              		.loc 1 275 0
+ 251 003e 01AA     		add	r2, sp, #4
+ 252              	.LVL33:
+ 253 0040 0146     		mov	r1, r0
+ 254              	.LVL34:
+ 255 0042 0848     		ldr	r0, .L31
+ 256              	.LVL35:
+ 257 0044 FFF7FEFF 		bl	USBH_MSC_GetLUNInfo
+ 258              	.LVL36:
+ 259 0048 50B9     		cbnz	r0, .L29
+ 277:Src/usbh_diskio.c ****       res = RES_OK;
+ 260              		.loc 1 277 0
+ 261 004a BDF80C30 		ldrh	r3, [sp, #12]
+ 262 004e 5B0A     		lsrs	r3, r3, #9
+ 263 0050 2360     		str	r3, [r4]
+ 264              	.LVL37:
+ 265 0052 DFE7     		b	.L20
+ 266              	.LVL38:
+ 267              	.L26:
+ 287:Src/usbh_diskio.c ****   }
+ 268              		.loc 1 287 0
+ 269 0054 0420     		movs	r0, #4
+ 270              	.LVL39:
+ 271 0056 DDE7     		b	.L20
+ 272              	.LVL40:
+ 273              	.L27:
+ 255:Src/usbh_diskio.c ****     }
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s 			page 11
+
+
+ 274              		.loc 1 255 0
+ 275 0058 0120     		movs	r0, #1
+ 276 005a DBE7     		b	.L20
+ 277              	.L28:
+ 268:Src/usbh_diskio.c ****     }
+ 278              		.loc 1 268 0
+ 279 005c 0120     		movs	r0, #1
+ 280 005e D9E7     		b	.L20
+ 281              	.L29:
+ 282:Src/usbh_diskio.c ****     }
+ 282              		.loc 1 282 0
+ 283 0060 0120     		movs	r0, #1
+ 284 0062 D7E7     		b	.L20
+ 285              	.L32:
+ 286              		.align	2
+ 287              	.L31:
+ 288 0064 00000000 		.word	hUsbHostFS
+ 289              		.cfi_endproc
+ 290              	.LFE145:
+ 292              		.section	.text.USBH_write,"ax",%progbits
+ 293              		.align	1
+ 294              		.global	USBH_write
+ 295              		.syntax unified
+ 296              		.thumb
+ 297              		.thumb_func
+ 298              		.fpu fpv5-sp-d16
+ 300              	USBH_write:
+ 301              	.LFB144:
+ 186:Src/usbh_diskio.c ****   DRESULT res = RES_ERROR;
+ 302              		.loc 1 186 0
+ 303              		.cfi_startproc
+ 304              		@ args = 0, pretend = 0, frame = 56
+ 305              		@ frame_needed = 0, uses_anonymous_args = 0
+ 306              	.LVL41:
+ 307 0000 10B5     		push	{r4, lr}
+ 308              	.LCFI9:
+ 309              		.cfi_def_cfa_offset 8
+ 310              		.cfi_offset 4, -8
+ 311              		.cfi_offset 14, -4
+ 312 0002 90B0     		sub	sp, sp, #64
+ 313              	.LCFI10:
+ 314              		.cfi_def_cfa_offset 72
+ 315 0004 0446     		mov	r4, r0
+ 316              	.LVL42:
+ 190:Src/usbh_diskio.c ****   {
+ 317              		.loc 1 190 0
+ 318 0006 0093     		str	r3, [sp]
+ 319 0008 0B46     		mov	r3, r1
+ 320              	.LVL43:
+ 321 000a 0146     		mov	r1, r0
+ 322              	.LVL44:
+ 323 000c 0E48     		ldr	r0, .L43
+ 324              	.LVL45:
+ 325 000e FFF7FEFF 		bl	USBH_MSC_Write
+ 326              	.LVL46:
+ 327 0012 10B9     		cbnz	r0, .L41
+ 192:Src/usbh_diskio.c ****   }
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s 			page 12
+
+
+ 328              		.loc 1 192 0
+ 329 0014 0020     		movs	r0, #0
+ 330              	.L34:
+ 331              	.LVL47:
+ 219:Src/usbh_diskio.c **** #endif /* _USE_WRITE == 1 */
+ 332              		.loc 1 219 0
+ 333 0016 10B0     		add	sp, sp, #64
+ 334              	.LCFI11:
+ 335              		.cfi_remember_state
+ 336              		.cfi_def_cfa_offset 8
+ 337              		@ sp needed
+ 338 0018 10BD     		pop	{r4, pc}
+ 339              	.LVL48:
+ 340              	.L41:
+ 341              	.LCFI12:
+ 342              		.cfi_restore_state
+ 196:Src/usbh_diskio.c **** 
+ 343              		.loc 1 196 0
+ 344 001a 03AA     		add	r2, sp, #12
+ 345 001c 2146     		mov	r1, r4
+ 346 001e 0A48     		ldr	r0, .L43
+ 347 0020 FFF7FEFF 		bl	USBH_MSC_GetLUNInfo
+ 348              	.LVL49:
+ 198:Src/usbh_diskio.c ****     {
+ 349              		.loc 1 198 0
+ 350 0024 9DF81930 		ldrb	r3, [sp, #25]	@ zero_extendqisi2
+ 351 0028 272B     		cmp	r3, #39
+ 352 002a 0AD0     		beq	.L36
+ 353 002c 05D9     		bls	.L42
+ 354 002e 282B     		cmp	r3, #40
+ 355 0030 01D0     		beq	.L39
+ 356 0032 3A2B     		cmp	r3, #58
+ 357 0034 03D1     		bne	.L35
+ 358              	.L39:
+ 209:Src/usbh_diskio.c ****       break;
+ 359              		.loc 1 209 0
+ 360 0036 0320     		movs	r0, #3
+ 361 0038 EDE7     		b	.L34
+ 362              	.L42:
+ 198:Src/usbh_diskio.c ****     {
+ 363              		.loc 1 198 0
+ 364 003a 042B     		cmp	r3, #4
+ 365 003c FBD0     		beq	.L39
+ 366              	.L35:
+ 213:Src/usbh_diskio.c ****       break;
+ 367              		.loc 1 213 0
+ 368 003e 0120     		movs	r0, #1
+ 214:Src/usbh_diskio.c ****     }
+ 369              		.loc 1 214 0
+ 370 0040 E9E7     		b	.L34
+ 371              	.L36:
+ 202:Src/usbh_diskio.c ****       break;
+ 372              		.loc 1 202 0
+ 373 0042 0220     		movs	r0, #2
+ 374 0044 E7E7     		b	.L34
+ 375              	.L44:
+ 376 0046 00BF     		.align	2
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s 			page 13
+
+
+ 377              	.L43:
+ 378 0048 00000000 		.word	hUsbHostFS
+ 379              		.cfi_endproc
+ 380              	.LFE144:
+ 382              		.global	USBH_Driver
+ 383              		.section	.rodata.USBH_Driver,"a",%progbits
+ 384              		.align	2
+ 387              	USBH_Driver:
+ 388 0000 00000000 		.word	USBH_initialize
+ 389 0004 00000000 		.word	USBH_status
+ 390 0008 00000000 		.word	USBH_read
+ 391 000c 00000000 		.word	USBH_write
+ 392 0010 00000000 		.word	USBH_ioctl
+ 393              		.text
+ 394              	.Letext0:
+ 395              		.file 2 "Middlewares/Third_Party/FatFs/src/integer.h"
+ 396              		.file 3 "Middlewares/Third_Party/FatFs/src/diskio.h"
+ 397              		.file 4 "c:\\gcc_toolchain\\6_2017-q1-update\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 398              		.file 5 "c:\\gcc_toolchain\\6_2017-q1-update\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 399              		.file 6 "Drivers/CMSIS/Include/core_cm7.h"
+ 400              		.file 7 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/system_stm32f7xx.h"
+ 401              		.file 8 "c:\\gcc_toolchain\\6_2017-q1-update\\arm-none-eabi\\include\\sys\\lock.h"
+ 402              		.file 9 "c:\\gcc_toolchain\\6_2017-q1-update\\arm-none-eabi\\include\\sys\\_types.h"
+ 403              		.file 10 "c:\\gcc_toolchain\\6_2017-q1-update\\lib\\gcc\\arm-none-eabi\\6.3.1\\include\\stddef.h"
+ 404              		.file 11 "c:\\gcc_toolchain\\6_2017-q1-update\\arm-none-eabi\\include\\sys\\reent.h"
+ 405              		.file 12 "Middlewares/Third_Party/FreeRTOS/Source/include/task.h"
+ 406              		.file 13 "Middlewares/Third_Party/FreeRTOS/Source/include/queue.h"
+ 407              		.file 14 "Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h"
+ 408              		.file 15 "c:\\gcc_toolchain\\6_2017-q1-update\\arm-none-eabi\\include\\stdlib.h"
+ 409              		.file 16 "Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_def.h"
+ 410              		.file 17 "Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ctlreq.h"
+ 411              		.file 18 "Middlewares/ST/STM32_USB_Host_Library/Class/MSC/Inc/usbh_msc_scsi.h"
+ 412              		.file 19 "Middlewares/ST/STM32_USB_Host_Library/Class/MSC/Inc/usbh_msc.h"
+ 413              		.file 20 "Middlewares/Third_Party/FatFs/src/ff_gen_drv.h"
+ 414              		.file 21 "Inc/usbh_diskio.h"
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s 			page 14
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 usbh_diskio.c
+C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s:18     .text.USBH_initialize:00000000 $t
+C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s:25     .text.USBH_initialize:00000000 USBH_initialize
+C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s:42     .text.USBH_status:00000000 $t
+C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s:49     .text.USBH_status:00000000 USBH_status
+C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s:82     .text.USBH_status:00000014 $d
+C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s:87     .text.USBH_read:00000000 $t
+C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s:94     .text.USBH_read:00000000 USBH_read
+C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s:161    .text.USBH_read:0000003c $d
+C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s:166    .text.USBH_ioctl:00000000 $t
+C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s:173    .text.USBH_ioctl:00000000 USBH_ioctl
+C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s:195    .text.USBH_ioctl:0000000e $d
+C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s:199    .text.USBH_ioctl:00000012 $t
+C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s:288    .text.USBH_ioctl:00000064 $d
+C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s:293    .text.USBH_write:00000000 $t
+C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s:300    .text.USBH_write:00000000 USBH_write
+C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s:378    .text.USBH_write:00000048 $d
+C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s:387    .rodata.USBH_Driver:00000000 USBH_Driver
+C:\Users\Student\AppData\Local\Temp\ccLkm2ta.s:384    .rodata.USBH_Driver:00000000 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+USBH_MSC_UnitIsReady
+hUsbHostFS
+USBH_MSC_Read
+USBH_MSC_GetLUNInfo
+USBH_MSC_Write

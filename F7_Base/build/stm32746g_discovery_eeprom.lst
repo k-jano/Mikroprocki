@@ -1,0 +1,1180 @@
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"stm32746g_discovery_eeprom.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.BSP_EEPROM_Init,"ax",%progbits
+  18              		.align	1
+  19              		.global	BSP_EEPROM_Init
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-sp-d16
+  25              	BSP_EEPROM_Init:
+  26              	.LFB136:
+  27              		.file 1 "Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c"
+   1:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /**
+   2:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   ******************************************************************************
+   3:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @file    stm32746g_discovery_eeprom.c
+   4:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @author  MCD Application Team
+   5:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @brief   This file provides a set of functions needed to manage an I2C M24LR64 
+   6:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *          EEPROM memory.
+   7:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   @verbatim
+   8:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****              To be able to use this driver, the switch EE_M24LR64 must be defined
+   9:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****              in your toolchain compiler preprocessor
+  10:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****              
+  11:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****              =================================================================== 
+  12:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****              Notes:
+  13:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****               - The I2C EEPROM memory (M24LR64) is available on separate daughter 
+  14:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****                 board ANT7-M24LR-A, which is not provided with the STM32746G_DISCOVERY
+  15:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****                 board.
+  16:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****                 To use this driver you have to connect the ANT7-M24LR-A to CN3 
+  17:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****                 connector of STM32746G_DISCOVERY board.
+  18:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****              ===================================================================
+  19:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****                  
+  20:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****              It implements a high level communication layer for read and write 
+  21:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****              from/to this memory. The needed STM32F7xx hardware resources (I2C and
+  22:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****              GPIO) are defined in stm32746g_discovery.h file, and the initialization is
+  23:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****              performed in EEPROM_IO_Init() function declared in stm32746g_discovery.c
+  24:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****              file.
+  25:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****              You can easily tailor this driver to any other development board, 
+  26:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****              by just adapting the defines for hardware resources and 
+  27:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****              EEPROM_IO_Init() function. 
+  28:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****            
+  29:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****              @note In this driver, basic read and write functions (BSP_EEPROM_ReadBuffer() 
+  30:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****                    and BSP_EEPROM_WritePage()) use DMA mode to perform the data 
+  31:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****                    transfer to/from EEPROM memory.
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 2
+
+
+  32:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****    
+  33:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****             @note   Regarding BSP_EEPROM_WritePage(), it is an optimized function to perform
+  34:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****                    small write (less than 1 page) BUT the number of bytes (combined to write start 
+  35:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****                    cross the EEPROM page boundary. This function can only writes into
+  36:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****                    the boundaries of an EEPROM page.
+  37:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****                    This function doesn't check on boundaries condition (in this driver 
+  38:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****                    the function BSP_EEPROM_WriteBuffer() which calls BSP_EEPROM_WritePage() is 
+  39:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****                    responsible of checking on Page boundaries).
+  40:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     
+  41:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****                 
+  42:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         +-----------------------------------------------------------------+
+  43:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         |               Pin assignment for M24LR64 EEPROM                 |
+  44:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         +---------------------------------------+-----------+-------------+
+  45:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         |  STM32F7xx I2C Pins                   |   EEPROM  |   Pin       |
+  46:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         +---------------------------------------+-----------+-------------+
+  47:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         | .                                     |   E0(GND) |    1  (0V)  |
+  48:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         | .                                     |   AC0     |    2        |
+  49:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         | .                                     |   AC1     |    3        |
+  50:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         | .                                     |   VSS     |    4  (0V)  |
+  51:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         | SDA                                   |   SDA     |    5        |
+  52:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         | SCL                                   |   SCL     |    6        |
+  53:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         | .                                     |   E1(GND) |    7  (0V)  |
+  54:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         | .                                     |   VDD     |    8 (3.3V) |
+  55:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         +---------------------------------------+-----------+-------------+
+  56:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   @endverbatim   
+  57:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   ******************************************************************************
+  58:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @attention
+  59:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *
+  60:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * <h2><center>&copy; COPYRIGHT(c) 2016 STMicroelectronics</center></h2>
+  61:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *
+  62:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * Redistribution and use in source and binary forms, with or without modification,
+  63:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * are permitted provided that the following conditions are met:
+  64:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *   1. Redistributions of source code must retain the above copyright notice,
+  65:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *      this list of conditions and the following disclaimer.
+  66:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *   2. Redistributions in binary form must reproduce the above copyright notice,
+  67:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *      this list of conditions and the following disclaimer in the documentation
+  68:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *      and/or other materials provided with the distribution.
+  69:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  70:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *      may be used to endorse or promote products derived from this software
+  71:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *      without specific prior written permission.
+  72:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *
+  73:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  74:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  75:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  76:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  77:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  78:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  79:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  80:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  81:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  82:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  83:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *
+  84:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   ******************************************************************************
+  85:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */
+  86:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+  87:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /* Dependencies 
+  88:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** - stm32746g_discovery.c
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 3
+
+
+  89:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** EndDependencies */
+  90:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+  91:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /* Includes ------------------------------------------------------------------*/
+  92:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** #include "stm32746g_discovery_eeprom.h"
+  93:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+  94:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /** @addtogroup BSP
+  95:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @{
+  96:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */
+  97:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   
+  98:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /** @addtogroup STM32746G_DISCOVERY
+  99:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @{
+ 100:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */ 
+ 101:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   
+ 102:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /** @addtogroup STM32746G_DISCOVERY_EEPROM
+ 103:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @brief This file includes the I2C EEPROM driver of STM32746G-Discovery board.
+ 104:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @{
+ 105:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */ 
+ 106:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+ 107:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /** @defgroup STM32746G_DISCOVERY_EEPROM_Private_Types STM32746G_DISCOVERY_EEPROM Private Types
+ 108:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @{
+ 109:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */ 
+ 110:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /**
+ 111:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @}
+ 112:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */ 
+ 113:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+ 114:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /** @defgroup STM32746G_DISCOVERY_EEPROM_Private_Defines STM32746G_DISCOVERY_EEPROM Private Defines
+ 115:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @{
+ 116:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */  
+ 117:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /**
+ 118:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @}
+ 119:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */ 
+ 120:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+ 121:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /** @defgroup STM32746G_DISCOVERY_EEPROM_Private_Macros STM32746G_DISCOVERY_EEPROM Private Macros
+ 122:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @{
+ 123:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */
+ 124:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /**
+ 125:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @}
+ 126:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */ 
+ 127:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   
+ 128:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /** @defgroup STM32746G_DISCOVERY_EEPROM_Private_Variables STM32746G_DISCOVERY_EEPROM Private Varia
+ 129:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @{
+ 130:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */
+ 131:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** __IO uint16_t EEPROMAddress = 0;
+ 132:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** __IO uint16_t EEPROMDataRead;
+ 133:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** __IO uint8_t  EEPROMDataWrite;
+ 134:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /**
+ 135:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @}
+ 136:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */ 
+ 137:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+ 138:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /** @defgroup STM32746G_DISCOVERY_EEPROM_Private_Function_Prototypes STM32746G_DISCOVERY_EEPROM Pri
+ 139:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @{
+ 140:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */ 
+ 141:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /**
+ 142:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @}
+ 143:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */ 
+ 144:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+ 145:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /** @defgroup STM32746G_DISCOVERY_EEPROM_Exported_Functions STM32746G_DISCOVERY_EEPROM Exported Fun
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 4
+
+
+ 146:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @{
+ 147:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */ 
+ 148:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+ 149:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /**
+ 150:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @brief  Initializes peripherals used by the I2C EEPROM driver.
+ 151:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * 
+ 152:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @note   There are 2 different versions of M24LR64 (A01 & A02).
+ 153:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *             Then try to connect on 1st one (EEPROM_I2C_ADDRESS_A01) 
+ 154:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *             and if problem, check the 2nd one (EEPROM_I2C_ADDRESS_A02)
+ 155:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @retval EEPROM_OK (0) if operation is correctly performed, else return value 
+ 156:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *         different from EEPROM_OK (0)
+ 157:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */
+ 158:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** uint32_t BSP_EEPROM_Init(void)
+ 159:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** { 
+  28              		.loc 1 159 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 08B5     		push	{r3, lr}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 3, -8
+  36              		.cfi_offset 14, -4
+ 160:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   /* I2C Initialization */
+ 161:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   EEPROM_IO_Init();
+  37              		.loc 1 161 0
+  38 0002 FFF7FEFF 		bl	EEPROM_IO_Init
+  39              	.LVL0:
+ 162:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   
+ 163:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   /* Select the EEPROM address for A01 and check if OK */
+ 164:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   EEPROMAddress = EEPROM_I2C_ADDRESS_A01;
+  40              		.loc 1 164 0
+  41 0006 0D4B     		ldr	r3, .L8
+  42 0008 A022     		movs	r2, #160
+  43 000a 1A80     		strh	r2, [r3]	@ movhi
+ 165:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   if(EEPROM_IO_IsDeviceReady(EEPROMAddress, EEPROM_MAX_TRIALS) != HAL_OK) 
+  44              		.loc 1 165 0
+  45 000c 1888     		ldrh	r0, [r3]
+  46 000e 40F6B831 		movw	r1, #3000
+  47 0012 80B2     		uxth	r0, r0
+  48 0014 FFF7FEFF 		bl	EEPROM_IO_IsDeviceReady
+  49              	.LVL1:
+  50 0018 08B9     		cbnz	r0, .L6
+ 166:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   {
+ 167:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     /* Select the EEPROM address for A02 and check if OK */
+ 168:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     EEPROMAddress = EEPROM_I2C_ADDRESS_A02;
+ 169:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     if(EEPROM_IO_IsDeviceReady(EEPROMAddress, EEPROM_MAX_TRIALS) != HAL_OK)
+ 170:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     {
+ 171:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       return EEPROM_FAIL;
+ 172:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     }
+ 173:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   }
+ 174:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   return EEPROM_OK;
+  51              		.loc 1 174 0
+  52 001a 0020     		movs	r0, #0
+  53 001c 08BD     		pop	{r3, pc}
+  54              	.L6:
+ 168:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     if(EEPROM_IO_IsDeviceReady(EEPROMAddress, EEPROM_MAX_TRIALS) != HAL_OK)
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 5
+
+
+  55              		.loc 1 168 0
+  56 001e 074B     		ldr	r3, .L8
+  57 0020 A622     		movs	r2, #166
+  58 0022 1A80     		strh	r2, [r3]	@ movhi
+ 169:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     {
+  59              		.loc 1 169 0
+  60 0024 1888     		ldrh	r0, [r3]
+  61 0026 40F6B831 		movw	r1, #3000
+  62 002a 80B2     		uxth	r0, r0
+  63 002c FFF7FEFF 		bl	EEPROM_IO_IsDeviceReady
+  64              	.LVL2:
+  65 0030 08B9     		cbnz	r0, .L7
+  66              		.loc 1 174 0
+  67 0032 0020     		movs	r0, #0
+ 175:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** }
+  68              		.loc 1 175 0
+  69 0034 08BD     		pop	{r3, pc}
+  70              	.L7:
+ 171:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     }
+  71              		.loc 1 171 0
+  72 0036 0120     		movs	r0, #1
+  73 0038 08BD     		pop	{r3, pc}
+  74              	.L9:
+  75 003a 00BF     		.align	2
+  76              	.L8:
+  77 003c 00000000 		.word	.LANCHOR0
+  78              		.cfi_endproc
+  79              	.LFE136:
+  81              		.section	.text.BSP_EEPROM_DeInit,"ax",%progbits
+  82              		.align	1
+  83              		.global	BSP_EEPROM_DeInit
+  84              		.syntax unified
+  85              		.thumb
+  86              		.thumb_func
+  87              		.fpu fpv5-sp-d16
+  89              	BSP_EEPROM_DeInit:
+  90              	.LFB137:
+ 176:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+ 177:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /**
+ 178:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @brief  DeInitializes the EEPROM.
+ 179:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @retval EEPROM state
+ 180:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */
+ 181:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** uint8_t BSP_EEPROM_DeInit(void)
+ 182:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** { 
+  91              		.loc 1 182 0
+  92              		.cfi_startproc
+  93              		@ args = 0, pretend = 0, frame = 0
+  94              		@ frame_needed = 0, uses_anonymous_args = 0
+  95              		@ link register save eliminated.
+ 183:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   /* I2C won't be disabled because common to other functionalities */
+ 184:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   return EEPROM_OK;
+ 185:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** }
+  96              		.loc 1 185 0
+  97 0000 0020     		movs	r0, #0
+  98 0002 7047     		bx	lr
+  99              		.cfi_endproc
+ 100              	.LFE137:
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 6
+
+
+ 102              		.section	.text.BSP_EEPROM_TIMEOUT_UserCallback,"ax",%progbits
+ 103              		.align	1
+ 104              		.weak	BSP_EEPROM_TIMEOUT_UserCallback
+ 105              		.syntax unified
+ 106              		.thumb
+ 107              		.thumb_func
+ 108              		.fpu fpv5-sp-d16
+ 110              	BSP_EEPROM_TIMEOUT_UserCallback:
+ 111              	.LFB142:
+ 186:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+ 187:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /**
+ 188:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @brief  Reads a block of data from the EEPROM.
+ 189:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @param  pBuffer: pointer to the buffer that receives the data read from 
+ 190:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *         the EEPROM.
+ 191:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @param  ReadAddr: EEPROM's internal address to start reading from.
+ 192:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @param  NumByteToRead: pointer to the variable holding number of bytes to 
+ 193:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *         be read from the EEPROM.
+ 194:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * 
+ 195:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *        @note The variable pointed by NumByteToRead is reset to 0 when all the 
+ 196:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *              data are read from the EEPROM. Application should monitor this 
+ 197:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *              variable in order know when the transfer is complete.
+ 198:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * 
+ 199:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @retval EEPROM_OK (0) if operation is correctly performed, else return value 
+ 200:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *         different from EEPROM_OK (0) or the timeout user callback.
+ 201:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */
+ 202:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** uint32_t BSP_EEPROM_ReadBuffer(uint8_t* pBuffer, uint16_t ReadAddr, uint16_t* NumByteToRead)
+ 203:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** {  
+ 204:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   uint32_t buffersize = *NumByteToRead;
+ 205:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   
+ 206:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   /* Set the pointer to the Number of data to be read. This pointer will be used 
+ 207:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****      by the DMA Transfer Completer interrupt Handler in order to reset the 
+ 208:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****      variable to 0. User should check on this variable in order to know if the 
+ 209:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****      DMA transfer has been complete or not. */
+ 210:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   EEPROMDataRead = *NumByteToRead;
+ 211:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   
+ 212:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   if(EEPROM_IO_ReadData(EEPROMAddress, ReadAddr, pBuffer, buffersize) != HAL_OK)
+ 213:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   {
+ 214:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     BSP_EEPROM_TIMEOUT_UserCallback();
+ 215:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     return EEPROM_FAIL;
+ 216:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   }
+ 217:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+ 218:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   /* If all operations OK, return EEPROM_OK (0) */
+ 219:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   return EEPROM_OK;
+ 220:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** }
+ 221:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+ 222:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /**
+ 223:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @brief  Writes more than one byte to the EEPROM with a single WRITE cycle.
+ 224:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *
+ 225:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @note   The number of bytes (combined to write start address) must not 
+ 226:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *         cross the EEPROM page boundary. This function can only write into
+ 227:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *         the boundaries of an EEPROM page.
+ 228:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *         This function doesn't check on boundaries condition (in this driver 
+ 229:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *         the function BSP_EEPROM_WriteBuffer() which calls BSP_EEPROM_WritePage() is 
+ 230:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *         responsible of checking on Page boundaries).
+ 231:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * 
+ 232:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @param  pBuffer: pointer to the buffer containing the data to be written to 
+ 233:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *         the EEPROM.
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 7
+
+
+ 234:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @param  WriteAddr: EEPROM's internal address to write to.
+ 235:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @param  NumByteToWrite: pointer to the variable holding number of bytes to 
+ 236:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *         be written into the EEPROM. 
+ 237:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * 
+ 238:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *        @note The variable pointed by NumByteToWrite is reset to 0 when all the 
+ 239:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *              data are written to the EEPROM. Application should monitor this 
+ 240:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *              variable in order know when the transfer is complete.
+ 241:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * 
+ 242:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *        @note This function just configure the communication and enable the DMA 
+ 243:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *              channel to transfer data. Meanwhile, the user application may perform 
+ 244:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *              other tasks in parallel.
+ 245:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * 
+ 246:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @retval EEPROM_OK (0) if operation is correctly performed, else return value 
+ 247:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *         different from EEPROM_OK (0) or the timeout user callback.
+ 248:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */
+ 249:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** uint32_t BSP_EEPROM_WritePage(uint8_t* pBuffer, uint16_t WriteAddr, uint8_t* NumByteToWrite)
+ 250:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** { 
+ 251:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   uint32_t buffersize = *NumByteToWrite;
+ 252:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   uint32_t status = EEPROM_OK;
+ 253:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   
+ 254:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   /* Set the pointer to the Number of data to be written. This pointer will be used 
+ 255:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       by the DMA Transfer Completer interrupt Handler in order to reset the 
+ 256:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       variable to 0. User should check on this variable in order to know if the 
+ 257:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       DMA transfer has been complete or not. */
+ 258:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   EEPROMDataWrite = *NumByteToWrite;  
+ 259:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   
+ 260:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   if(EEPROM_IO_WriteData(EEPROMAddress, WriteAddr, pBuffer, buffersize) != HAL_OK)
+ 261:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   {
+ 262:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     BSP_EEPROM_TIMEOUT_UserCallback();
+ 263:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     status = EEPROM_FAIL;
+ 264:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   }
+ 265:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   
+ 266:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   if(BSP_EEPROM_WaitEepromStandbyState() != EEPROM_OK) 
+ 267:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   {
+ 268:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     return EEPROM_FAIL;
+ 269:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   }
+ 270:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   
+ 271:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   /* If all operations OK, return EEPROM_OK (0) */
+ 272:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   return status;
+ 273:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** }
+ 274:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+ 275:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /**
+ 276:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @brief  Writes buffer of data to the I2C EEPROM.
+ 277:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @param  pBuffer: pointer to the buffer  containing the data to be written 
+ 278:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *         to the EEPROM.
+ 279:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @param  WriteAddr: EEPROM's internal address to write to.
+ 280:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @param  NumByteToWrite: number of bytes to write to the EEPROM.
+ 281:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @retval EEPROM_OK (0) if operation is correctly performed, else return value 
+ 282:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *         different from EEPROM_OK (0) or the timeout user callback.
+ 283:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */
+ 284:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** uint32_t BSP_EEPROM_WriteBuffer(uint8_t *pBuffer, uint16_t WriteAddr, uint16_t NumByteToWrite)
+ 285:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** {
+ 286:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   uint16_t numofpage = 0, numofsingle = 0, count = 0;
+ 287:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   uint16_t addr = 0;
+ 288:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   uint8_t  dataindex = 0;
+ 289:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   uint32_t status = EEPROM_OK;
+ 290:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 8
+
+
+ 291:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   addr = WriteAddr % EEPROM_PAGESIZE;
+ 292:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   count = EEPROM_PAGESIZE - addr;
+ 293:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   numofpage =  NumByteToWrite / EEPROM_PAGESIZE;
+ 294:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   numofsingle = NumByteToWrite % EEPROM_PAGESIZE;
+ 295:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****  
+ 296:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   /* If WriteAddr is EEPROM_PAGESIZE aligned */
+ 297:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   if(addr == 0) 
+ 298:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   {
+ 299:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     /* If NumByteToWrite < EEPROM_PAGESIZE */
+ 300:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     if(numofpage == 0) 
+ 301:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     {
+ 302:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       /* Store the number of data to be written */
+ 303:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       dataindex = numofsingle;
+ 304:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       /* Start writing data */
+ 305:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       status = BSP_EEPROM_WritePage(pBuffer, WriteAddr, (uint8_t*)(&dataindex));
+ 306:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       if(status != EEPROM_OK)
+ 307:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       {
+ 308:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         return status;
+ 309:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       }
+ 310:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     }
+ 311:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     /* If NumByteToWrite > EEPROM_PAGESIZE */
+ 312:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     else  
+ 313:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     {
+ 314:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       while(numofpage--)
+ 315:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       {
+ 316:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         /* Store the number of data to be written */
+ 317:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         dataindex = EEPROM_PAGESIZE;        
+ 318:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         status = BSP_EEPROM_WritePage(pBuffer, WriteAddr, (uint8_t*)(&dataindex));
+ 319:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         if(status != EEPROM_OK)
+ 320:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         {
+ 321:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****           return status;
+ 322:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         }
+ 323:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         
+ 324:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         WriteAddr +=  EEPROM_PAGESIZE;
+ 325:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         pBuffer += EEPROM_PAGESIZE;
+ 326:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       }
+ 327:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       
+ 328:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       if(numofsingle!=0)
+ 329:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       {
+ 330:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         /* Store the number of data to be written */
+ 331:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         dataindex = numofsingle;          
+ 332:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         status = BSP_EEPROM_WritePage(pBuffer, WriteAddr, (uint8_t*)(&dataindex));
+ 333:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         if(status != EEPROM_OK)
+ 334:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         {
+ 335:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****           return status;
+ 336:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         }
+ 337:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       }
+ 338:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     }
+ 339:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   }
+ 340:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   /* If WriteAddr is not EEPROM_PAGESIZE aligned */
+ 341:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   else 
+ 342:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   {
+ 343:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     /* If NumByteToWrite < EEPROM_PAGESIZE */
+ 344:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     if(numofpage== 0) 
+ 345:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     {
+ 346:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       /* If the number of data to be written is more than the remaining space 
+ 347:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       in the current page: */
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 9
+
+
+ 348:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       if(NumByteToWrite > count)
+ 349:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       {
+ 350:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         /* Store the number of data to be written */
+ 351:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         dataindex = count;        
+ 352:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         /* Write the data contained in same page */
+ 353:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         status = BSP_EEPROM_WritePage(pBuffer, WriteAddr, (uint8_t*)(&dataindex));
+ 354:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         if(status != EEPROM_OK)
+ 355:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         {
+ 356:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****           return status;
+ 357:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         }
+ 358:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         
+ 359:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         /* Store the number of data to be written */
+ 360:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         dataindex = (NumByteToWrite - count);          
+ 361:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         /* Write the remaining data in the following page */
+ 362:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         status = BSP_EEPROM_WritePage((uint8_t*)(pBuffer + count), (WriteAddr + count), (uint8_t*)(
+ 363:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         if(status != EEPROM_OK)
+ 364:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         {
+ 365:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****           return status;
+ 366:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         }
+ 367:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       }      
+ 368:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       else      
+ 369:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       {
+ 370:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         /* Store the number of data to be written */
+ 371:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         dataindex = numofsingle;         
+ 372:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         status = BSP_EEPROM_WritePage(pBuffer, WriteAddr, (uint8_t*)(&dataindex));
+ 373:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         if(status != EEPROM_OK)
+ 374:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         {
+ 375:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****           return status;
+ 376:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         }
+ 377:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       }     
+ 378:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     }
+ 379:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     /* If NumByteToWrite > EEPROM_PAGESIZE */
+ 380:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     else
+ 381:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     {
+ 382:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       NumByteToWrite -= count;
+ 383:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       numofpage =  NumByteToWrite / EEPROM_PAGESIZE;
+ 384:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       numofsingle = NumByteToWrite % EEPROM_PAGESIZE;
+ 385:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       
+ 386:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       if(count != 0)
+ 387:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       {  
+ 388:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         /* Store the number of data to be written */
+ 389:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         dataindex = count;         
+ 390:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         status = BSP_EEPROM_WritePage(pBuffer, WriteAddr, (uint8_t*)(&dataindex));
+ 391:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         if(status != EEPROM_OK)
+ 392:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         {
+ 393:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****           return status;
+ 394:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         }
+ 395:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         WriteAddr += count;
+ 396:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         pBuffer += count;
+ 397:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       } 
+ 398:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       
+ 399:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       while(numofpage--)
+ 400:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       {
+ 401:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         /* Store the number of data to be written */
+ 402:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         dataindex = EEPROM_PAGESIZE;          
+ 403:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         status = BSP_EEPROM_WritePage(pBuffer, WriteAddr, (uint8_t*)(&dataindex));
+ 404:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         if(status != EEPROM_OK)
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 10
+
+
+ 405:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         {
+ 406:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****           return status;
+ 407:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         }
+ 408:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         WriteAddr +=  EEPROM_PAGESIZE;
+ 409:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         pBuffer += EEPROM_PAGESIZE;  
+ 410:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       }
+ 411:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       if(numofsingle != 0)
+ 412:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       {
+ 413:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         /* Store the number of data to be written */
+ 414:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         dataindex = numofsingle;           
+ 415:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         status = BSP_EEPROM_WritePage(pBuffer, WriteAddr, (uint8_t*)(&dataindex));
+ 416:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         if(status != EEPROM_OK)
+ 417:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         {
+ 418:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****           return status;
+ 419:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         }
+ 420:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       }
+ 421:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     }
+ 422:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   }  
+ 423:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****                                    
+ 424:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   /* If all operations OK, return EEPROM_OK (0) */
+ 425:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   return EEPROM_OK;
+ 426:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** }
+ 427:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+ 428:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /**
+ 429:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @brief  Wait for EEPROM Standby state.
+ 430:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * 
+ 431:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @note  This function allows to wait and check that EEPROM has finished the 
+ 432:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *        last operation. It is mostly used after Write operation: after receiving
+ 433:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *        the buffer to be written, the EEPROM may need additional time to actually
+ 434:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *        perform the write operation. During this time, it doesn't answer to
+ 435:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *        I2C packets addressed to it. Once the write operation is complete
+ 436:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *        the EEPROM responds to its address.
+ 437:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * 
+ 438:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @retval EEPROM_OK (0) if operation is correctly performed, else return value 
+ 439:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   *         different from EEPROM_OK (0) or the timeout user callback.
+ 440:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */
+ 441:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** uint32_t BSP_EEPROM_WaitEepromStandbyState(void)      
+ 442:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** {
+ 443:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   /* Check if the maximum allowed number of trials has bee reached */
+ 444:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   if(EEPROM_IO_IsDeviceReady(EEPROMAddress, EEPROM_MAX_TRIALS) != HAL_OK)
+ 445:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   {
+ 446:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     /* If the maximum number of trials has been reached, exit the function */
+ 447:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     BSP_EEPROM_TIMEOUT_UserCallback();
+ 448:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     return EEPROM_TIMEOUT;
+ 449:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   }
+ 450:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   return EEPROM_OK;
+ 451:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** }
+ 452:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+ 453:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** /**
+ 454:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @brief  Basic management of the timeout situation.
+ 455:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   * @retval None
+ 456:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   */
+ 457:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** __weak void BSP_EEPROM_TIMEOUT_UserCallback(void)
+ 458:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** {
+ 112              		.loc 1 458 0
+ 113              		.cfi_startproc
+ 114              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 11
+
+
+ 115              		@ frame_needed = 0, uses_anonymous_args = 0
+ 116              		@ link register save eliminated.
+ 117 0000 7047     		bx	lr
+ 118              		.cfi_endproc
+ 119              	.LFE142:
+ 121              		.section	.text.BSP_EEPROM_ReadBuffer,"ax",%progbits
+ 122              		.align	1
+ 123              		.global	BSP_EEPROM_ReadBuffer
+ 124              		.syntax unified
+ 125              		.thumb
+ 126              		.thumb_func
+ 127              		.fpu fpv5-sp-d16
+ 129              	BSP_EEPROM_ReadBuffer:
+ 130              	.LFB138:
+ 203:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   uint32_t buffersize = *NumByteToRead;
+ 131              		.loc 1 203 0
+ 132              		.cfi_startproc
+ 133              		@ args = 0, pretend = 0, frame = 0
+ 134              		@ frame_needed = 0, uses_anonymous_args = 0
+ 135              	.LVL3:
+ 203:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   uint32_t buffersize = *NumByteToRead;
+ 136              		.loc 1 203 0
+ 137 0000 10B5     		push	{r4, lr}
+ 138              	.LCFI1:
+ 139              		.cfi_def_cfa_offset 8
+ 140              		.cfi_offset 4, -8
+ 141              		.cfi_offset 14, -4
+ 204:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   
+ 142              		.loc 1 204 0
+ 143 0002 1388     		ldrh	r3, [r2]
+ 144              	.LVL4:
+ 210:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   
+ 145              		.loc 1 210 0
+ 146 0004 074A     		ldr	r2, .L17
+ 147              	.LVL5:
+ 148 0006 1380     		strh	r3, [r2]	@ movhi
+ 212:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   {
+ 149              		.loc 1 212 0
+ 150 0008 074A     		ldr	r2, .L17+4
+ 151 000a 1488     		ldrh	r4, [r2]
+ 152 000c 0246     		mov	r2, r0
+ 153 000e A0B2     		uxth	r0, r4
+ 154              	.LVL6:
+ 155 0010 FFF7FEFF 		bl	EEPROM_IO_ReadData
+ 156              	.LVL7:
+ 157 0014 08B9     		cbnz	r0, .L16
+ 219:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** }
+ 158              		.loc 1 219 0
+ 159 0016 0020     		movs	r0, #0
+ 220:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+ 160              		.loc 1 220 0
+ 161 0018 10BD     		pop	{r4, pc}
+ 162              	.L16:
+ 214:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     return EEPROM_FAIL;
+ 163              		.loc 1 214 0
+ 164 001a FFF7FEFF 		bl	BSP_EEPROM_TIMEOUT_UserCallback
+ 165              	.LVL8:
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 12
+
+
+ 215:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   }
+ 166              		.loc 1 215 0
+ 167 001e 0120     		movs	r0, #1
+ 168 0020 10BD     		pop	{r4, pc}
+ 169              	.L18:
+ 170 0022 00BF     		.align	2
+ 171              	.L17:
+ 172 0024 00000000 		.word	EEPROMDataRead
+ 173 0028 00000000 		.word	.LANCHOR0
+ 174              		.cfi_endproc
+ 175              	.LFE138:
+ 177              		.section	.text.BSP_EEPROM_WaitEepromStandbyState,"ax",%progbits
+ 178              		.align	1
+ 179              		.global	BSP_EEPROM_WaitEepromStandbyState
+ 180              		.syntax unified
+ 181              		.thumb
+ 182              		.thumb_func
+ 183              		.fpu fpv5-sp-d16
+ 185              	BSP_EEPROM_WaitEepromStandbyState:
+ 186              	.LFB141:
+ 442:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   /* Check if the maximum allowed number of trials has bee reached */
+ 187              		.loc 1 442 0
+ 188              		.cfi_startproc
+ 189              		@ args = 0, pretend = 0, frame = 0
+ 190              		@ frame_needed = 0, uses_anonymous_args = 0
+ 191 0000 08B5     		push	{r3, lr}
+ 192              	.LCFI2:
+ 193              		.cfi_def_cfa_offset 8
+ 194              		.cfi_offset 3, -8
+ 195              		.cfi_offset 14, -4
+ 444:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   {
+ 196              		.loc 1 444 0
+ 197 0002 074B     		ldr	r3, .L24
+ 198 0004 1888     		ldrh	r0, [r3]
+ 199 0006 40F6B831 		movw	r1, #3000
+ 200 000a 80B2     		uxth	r0, r0
+ 201 000c FFF7FEFF 		bl	EEPROM_IO_IsDeviceReady
+ 202              	.LVL9:
+ 203 0010 08B9     		cbnz	r0, .L23
+ 450:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** }
+ 204              		.loc 1 450 0
+ 205 0012 0020     		movs	r0, #0
+ 451:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+ 206              		.loc 1 451 0
+ 207 0014 08BD     		pop	{r3, pc}
+ 208              	.L23:
+ 447:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     return EEPROM_TIMEOUT;
+ 209              		.loc 1 447 0
+ 210 0016 FFF7FEFF 		bl	BSP_EEPROM_TIMEOUT_UserCallback
+ 211              	.LVL10:
+ 448:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   }
+ 212              		.loc 1 448 0
+ 213 001a 0220     		movs	r0, #2
+ 214 001c 08BD     		pop	{r3, pc}
+ 215              	.L25:
+ 216 001e 00BF     		.align	2
+ 217              	.L24:
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 13
+
+
+ 218 0020 00000000 		.word	.LANCHOR0
+ 219              		.cfi_endproc
+ 220              	.LFE141:
+ 222              		.section	.text.BSP_EEPROM_WritePage,"ax",%progbits
+ 223              		.align	1
+ 224              		.global	BSP_EEPROM_WritePage
+ 225              		.syntax unified
+ 226              		.thumb
+ 227              		.thumb_func
+ 228              		.fpu fpv5-sp-d16
+ 230              	BSP_EEPROM_WritePage:
+ 231              	.LFB139:
+ 250:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   uint32_t buffersize = *NumByteToWrite;
+ 232              		.loc 1 250 0
+ 233              		.cfi_startproc
+ 234              		@ args = 0, pretend = 0, frame = 0
+ 235              		@ frame_needed = 0, uses_anonymous_args = 0
+ 236              	.LVL11:
+ 237 0000 10B5     		push	{r4, lr}
+ 238              	.LCFI3:
+ 239              		.cfi_def_cfa_offset 8
+ 240              		.cfi_offset 4, -8
+ 241              		.cfi_offset 14, -4
+ 251:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   uint32_t status = EEPROM_OK;
+ 242              		.loc 1 251 0
+ 243 0002 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
+ 244              	.LVL12:
+ 258:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   
+ 245              		.loc 1 258 0
+ 246 0004 0A4A     		ldr	r2, .L33
+ 247              	.LVL13:
+ 248 0006 1370     		strb	r3, [r2]
+ 260:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   {
+ 249              		.loc 1 260 0
+ 250 0008 0A4A     		ldr	r2, .L33+4
+ 251 000a 1488     		ldrh	r4, [r2]
+ 252 000c 0246     		mov	r2, r0
+ 253 000e A0B2     		uxth	r0, r4
+ 254              	.LVL14:
+ 255 0010 FFF7FEFF 		bl	EEPROM_IO_WriteData
+ 256              	.LVL15:
+ 257 0014 28B9     		cbnz	r0, .L31
+ 252:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   
+ 258              		.loc 1 252 0
+ 259 0016 0024     		movs	r4, #0
+ 260              	.LVL16:
+ 261              	.L27:
+ 266:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   {
+ 262              		.loc 1 266 0
+ 263 0018 FFF7FEFF 		bl	BSP_EEPROM_WaitEepromStandbyState
+ 264              	.LVL17:
+ 265 001c 28B9     		cbnz	r0, .L32
+ 266              	.LVL18:
+ 267              	.L26:
+ 273:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+ 268              		.loc 1 273 0
+ 269 001e 2046     		mov	r0, r4
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 14
+
+
+ 270 0020 10BD     		pop	{r4, pc}
+ 271              	.LVL19:
+ 272              	.L31:
+ 262:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     status = EEPROM_FAIL;
+ 273              		.loc 1 262 0
+ 274 0022 FFF7FEFF 		bl	BSP_EEPROM_TIMEOUT_UserCallback
+ 275              	.LVL20:
+ 263:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   }
+ 276              		.loc 1 263 0
+ 277 0026 0124     		movs	r4, #1
+ 278 0028 F6E7     		b	.L27
+ 279              	.LVL21:
+ 280              	.L32:
+ 268:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   }
+ 281              		.loc 1 268 0
+ 282 002a 0124     		movs	r4, #1
+ 283              	.LVL22:
+ 284 002c F7E7     		b	.L26
+ 285              	.L34:
+ 286 002e 00BF     		.align	2
+ 287              	.L33:
+ 288 0030 00000000 		.word	EEPROMDataWrite
+ 289 0034 00000000 		.word	.LANCHOR0
+ 290              		.cfi_endproc
+ 291              	.LFE139:
+ 293              		.section	.text.BSP_EEPROM_WriteBuffer,"ax",%progbits
+ 294              		.align	1
+ 295              		.global	BSP_EEPROM_WriteBuffer
+ 296              		.syntax unified
+ 297              		.thumb
+ 298              		.thumb_func
+ 299              		.fpu fpv5-sp-d16
+ 301              	BSP_EEPROM_WriteBuffer:
+ 302              	.LFB140:
+ 285:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   uint16_t numofpage = 0, numofsingle = 0, count = 0;
+ 303              		.loc 1 285 0
+ 304              		.cfi_startproc
+ 305              		@ args = 0, pretend = 0, frame = 8
+ 306              		@ frame_needed = 0, uses_anonymous_args = 0
+ 307              	.LVL23:
+ 308 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 309              	.LCFI4:
+ 310              		.cfi_def_cfa_offset 24
+ 311              		.cfi_offset 4, -24
+ 312              		.cfi_offset 5, -20
+ 313              		.cfi_offset 6, -16
+ 314              		.cfi_offset 7, -12
+ 315              		.cfi_offset 8, -8
+ 316              		.cfi_offset 14, -4
+ 317 0004 82B0     		sub	sp, sp, #8
+ 318              	.LCFI5:
+ 319              		.cfi_def_cfa_offset 32
+ 320 0006 0546     		mov	r5, r0
+ 321 0008 0C46     		mov	r4, r1
+ 322 000a 9046     		mov	r8, r2
+ 323              	.LVL24:
+ 291:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   count = EEPROM_PAGESIZE - addr;
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 15
+
+
+ 324              		.loc 1 291 0
+ 325 000c 01F00302 		and	r2, r1, #3
+ 326              	.LVL25:
+ 293:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   numofsingle = NumByteToWrite % EEPROM_PAGESIZE;
+ 327              		.loc 1 293 0
+ 328 0010 4FEA9803 		lsr	r3, r8, #2
+ 329              	.LVL26:
+ 294:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****  
+ 330              		.loc 1 294 0
+ 331 0014 08F00307 		and	r7, r8, #3
+ 332              	.LVL27:
+ 297:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****   {
+ 333              		.loc 1 297 0
+ 334 0018 42BB     		cbnz	r2, .L36
+ 300:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     {
+ 335              		.loc 1 300 0
+ 336 001a 8BB1     		cbz	r3, .L48
+ 337              	.LVL28:
+ 338              	.L37:
+ 314:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       {
+ 339              		.loc 1 314 0
+ 340 001c 5A1E     		subs	r2, r3, #1
+ 341 001e 96B2     		uxth	r6, r2
+ 342              	.LVL29:
+ 343 0020 C3B1     		cbz	r3, .L49
+ 317:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         status = BSP_EEPROM_WritePage(pBuffer, WriteAddr, (uint8_t*)(&dataindex));
+ 344              		.loc 1 317 0
+ 345 0022 02AA     		add	r2, sp, #8
+ 346 0024 0423     		movs	r3, #4
+ 347 0026 02F8013D 		strb	r3, [r2, #-1]!
+ 318:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         if(status != EEPROM_OK)
+ 348              		.loc 1 318 0
+ 349 002a 2146     		mov	r1, r4
+ 350 002c 2846     		mov	r0, r5
+ 351 002e FFF7FEFF 		bl	BSP_EEPROM_WritePage
+ 352              	.LVL30:
+ 319:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         {
+ 353              		.loc 1 319 0
+ 354 0032 0346     		mov	r3, r0
+ 355 0034 50B9     		cbnz	r0, .L35
+ 324:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         pBuffer += EEPROM_PAGESIZE;
+ 356              		.loc 1 324 0
+ 357 0036 0434     		adds	r4, r4, #4
+ 358              	.LVL31:
+ 359 0038 A4B2     		uxth	r4, r4
+ 360              	.LVL32:
+ 325:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       }
+ 361              		.loc 1 325 0
+ 362 003a 0435     		adds	r5, r5, #4
+ 363              	.LVL33:
+ 314:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       {
+ 364              		.loc 1 314 0
+ 365 003c 3346     		mov	r3, r6
+ 366 003e EDE7     		b	.L37
+ 367              	.LVL34:
+ 368              	.L48:
+ 303:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       /* Start writing data */
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 16
+
+
+ 369              		.loc 1 303 0
+ 370 0040 02AA     		add	r2, sp, #8
+ 371              	.LVL35:
+ 372 0042 02F8017D 		strb	r7, [r2, #-1]!
+ 305:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       if(status != EEPROM_OK)
+ 373              		.loc 1 305 0
+ 374 0046 FFF7FEFF 		bl	BSP_EEPROM_WritePage
+ 375              	.LVL36:
+ 376 004a 0346     		mov	r3, r0
+ 377              	.LVL37:
+ 378              	.L35:
+ 426:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** 
+ 379              		.loc 1 426 0
+ 380 004c 1846     		mov	r0, r3
+ 381 004e 02B0     		add	sp, sp, #8
+ 382              	.LCFI6:
+ 383              		.cfi_remember_state
+ 384              		.cfi_def_cfa_offset 24
+ 385              		@ sp needed
+ 386 0050 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 387              	.LVL38:
+ 388              	.L49:
+ 389              	.LCFI7:
+ 390              		.cfi_restore_state
+ 328:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       {
+ 391              		.loc 1 328 0
+ 392 0054 0FB9     		cbnz	r7, .L50
+ 425:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** }
+ 393              		.loc 1 425 0
+ 394 0056 0023     		movs	r3, #0
+ 395 0058 F8E7     		b	.L35
+ 396              	.L50:
+ 331:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         status = BSP_EEPROM_WritePage(pBuffer, WriteAddr, (uint8_t*)(&dataindex));
+ 397              		.loc 1 331 0
+ 398 005a 02AA     		add	r2, sp, #8
+ 399 005c 02F8017D 		strb	r7, [r2, #-1]!
+ 332:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         if(status != EEPROM_OK)
+ 400              		.loc 1 332 0
+ 401 0060 2146     		mov	r1, r4
+ 402 0062 2846     		mov	r0, r5
+ 403 0064 FFF7FEFF 		bl	BSP_EEPROM_WritePage
+ 404              	.LVL39:
+ 405 0068 0346     		mov	r3, r0
+ 406              	.LVL40:
+ 407 006a EFE7     		b	.L35
+ 408              	.LVL41:
+ 409              	.L36:
+ 410 006c C2F10406 		rsb	r6, r2, #4
+ 411 0070 B6B2     		uxth	r6, r6
+ 344:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****     {
+ 412              		.loc 1 344 0
+ 413 0072 EBB9     		cbnz	r3, .L40
+ 348:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       {
+ 414              		.loc 1 348 0
+ 415 0074 4645     		cmp	r6, r8
+ 416 0076 14D2     		bcs	.L41
+ 351:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         /* Write the data contained in same page */
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 17
+
+
+ 417              		.loc 1 351 0
+ 418 0078 F7B2     		uxtb	r7, r6
+ 419              	.LVL42:
+ 420 007a 02AA     		add	r2, sp, #8
+ 421              	.LVL43:
+ 422 007c 02F8017D 		strb	r7, [r2, #-1]!
+ 353:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         if(status != EEPROM_OK)
+ 423              		.loc 1 353 0
+ 424 0080 FFF7FEFF 		bl	BSP_EEPROM_WritePage
+ 425              	.LVL44:
+ 354:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         {
+ 426              		.loc 1 354 0
+ 427 0084 0346     		mov	r3, r0
+ 428 0086 0028     		cmp	r0, #0
+ 429 0088 E0D1     		bne	.L35
+ 360:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         /* Write the remaining data in the following page */
+ 430              		.loc 1 360 0
+ 431 008a A8EB0707 		sub	r7, r8, r7
+ 432 008e 02AA     		add	r2, sp, #8
+ 433 0090 02F8017D 		strb	r7, [r2, #-1]!
+ 362:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         if(status != EEPROM_OK)
+ 434              		.loc 1 362 0
+ 435 0094 A119     		adds	r1, r4, r6
+ 436 0096 89B2     		uxth	r1, r1
+ 437 0098 A819     		adds	r0, r5, r6
+ 438              	.LVL45:
+ 439 009a FFF7FEFF 		bl	BSP_EEPROM_WritePage
+ 440              	.LVL46:
+ 441 009e 0346     		mov	r3, r0
+ 442              	.LVL47:
+ 443 00a0 D4E7     		b	.L35
+ 444              	.LVL48:
+ 445              	.L41:
+ 371:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         status = BSP_EEPROM_WritePage(pBuffer, WriteAddr, (uint8_t*)(&dataindex));
+ 446              		.loc 1 371 0
+ 447 00a2 02AA     		add	r2, sp, #8
+ 448              	.LVL49:
+ 449 00a4 02F8017D 		strb	r7, [r2, #-1]!
+ 372:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         if(status != EEPROM_OK)
+ 450              		.loc 1 372 0
+ 451 00a8 FFF7FEFF 		bl	BSP_EEPROM_WritePage
+ 452              	.LVL50:
+ 453 00ac 0346     		mov	r3, r0
+ 454              	.LVL51:
+ 455 00ae CDE7     		b	.L35
+ 456              	.LVL52:
+ 457              	.L40:
+ 382:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       numofpage =  NumByteToWrite / EEPROM_PAGESIZE;
+ 458              		.loc 1 382 0
+ 459 00b0 A8EB0608 		sub	r8, r8, r6
+ 460 00b4 1FFA88F8 		uxth	r8, r8
+ 461              	.LVL53:
+ 383:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       numofsingle = NumByteToWrite % EEPROM_PAGESIZE;
+ 462              		.loc 1 383 0
+ 463 00b8 4FEA9807 		lsr	r7, r8, #2
+ 464              	.LVL54:
+ 384:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 18
+
+
+ 465              		.loc 1 384 0
+ 466 00bc 08F00308 		and	r8, r8, #3
+ 467              	.LVL55:
+ 386:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       {  
+ 468              		.loc 1 386 0
+ 469 00c0 96B9     		cbnz	r6, .L51
+ 470              	.LVL56:
+ 471              	.L43:
+ 399:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       {
+ 472              		.loc 1 399 0
+ 473 00c2 7B1E     		subs	r3, r7, #1
+ 474 00c4 9EB2     		uxth	r6, r3
+ 475              	.LVL57:
+ 476 00c6 DFB1     		cbz	r7, .L52
+ 402:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         status = BSP_EEPROM_WritePage(pBuffer, WriteAddr, (uint8_t*)(&dataindex));
+ 477              		.loc 1 402 0
+ 478 00c8 02AA     		add	r2, sp, #8
+ 479 00ca 0423     		movs	r3, #4
+ 480 00cc 02F8013D 		strb	r3, [r2, #-1]!
+ 403:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         if(status != EEPROM_OK)
+ 481              		.loc 1 403 0
+ 482 00d0 2146     		mov	r1, r4
+ 483 00d2 2846     		mov	r0, r5
+ 484 00d4 FFF7FEFF 		bl	BSP_EEPROM_WritePage
+ 485              	.LVL58:
+ 404:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         {
+ 486              		.loc 1 404 0
+ 487 00d8 0346     		mov	r3, r0
+ 488 00da 0028     		cmp	r0, #0
+ 489 00dc B6D1     		bne	.L35
+ 408:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         pBuffer += EEPROM_PAGESIZE;  
+ 490              		.loc 1 408 0
+ 491 00de 0434     		adds	r4, r4, #4
+ 492              	.LVL59:
+ 493 00e0 A4B2     		uxth	r4, r4
+ 494              	.LVL60:
+ 409:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       }
+ 495              		.loc 1 409 0
+ 496 00e2 0435     		adds	r5, r5, #4
+ 497              	.LVL61:
+ 399:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       {
+ 498              		.loc 1 399 0
+ 499 00e4 3746     		mov	r7, r6
+ 500 00e6 ECE7     		b	.L43
+ 501              	.LVL62:
+ 502              	.L51:
+ 389:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         status = BSP_EEPROM_WritePage(pBuffer, WriteAddr, (uint8_t*)(&dataindex));
+ 503              		.loc 1 389 0
+ 504 00e8 02AA     		add	r2, sp, #8
+ 505              	.LVL63:
+ 506 00ea 02F8016D 		strb	r6, [r2, #-1]!
+ 390:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         if(status != EEPROM_OK)
+ 507              		.loc 1 390 0
+ 508 00ee FFF7FEFF 		bl	BSP_EEPROM_WritePage
+ 509              	.LVL64:
+ 391:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         {
+ 510              		.loc 1 391 0
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 19
+
+
+ 511 00f2 0346     		mov	r3, r0
+ 512 00f4 0028     		cmp	r0, #0
+ 513 00f6 A9D1     		bne	.L35
+ 395:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         pBuffer += count;
+ 514              		.loc 1 395 0
+ 515 00f8 3444     		add	r4, r4, r6
+ 516              	.LVL65:
+ 517 00fa A4B2     		uxth	r4, r4
+ 518              	.LVL66:
+ 396:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       } 
+ 519              		.loc 1 396 0
+ 520 00fc 3544     		add	r5, r5, r6
+ 521              	.LVL67:
+ 522 00fe E0E7     		b	.L43
+ 523              	.LVL68:
+ 524              	.L52:
+ 411:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****       {
+ 525              		.loc 1 411 0
+ 526 0100 B8F1000F 		cmp	r8, #0
+ 527 0104 01D1     		bne	.L53
+ 425:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c **** }
+ 528              		.loc 1 425 0
+ 529 0106 0023     		movs	r3, #0
+ 530 0108 A0E7     		b	.L35
+ 531              	.L53:
+ 414:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         status = BSP_EEPROM_WritePage(pBuffer, WriteAddr, (uint8_t*)(&dataindex));
+ 532              		.loc 1 414 0
+ 533 010a 02AA     		add	r2, sp, #8
+ 534 010c 02F8018D 		strb	r8, [r2, #-1]!
+ 415:Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.c ****         if(status != EEPROM_OK)
+ 535              		.loc 1 415 0
+ 536 0110 2146     		mov	r1, r4
+ 537 0112 2846     		mov	r0, r5
+ 538 0114 FFF7FEFF 		bl	BSP_EEPROM_WritePage
+ 539              	.LVL69:
+ 540 0118 0346     		mov	r3, r0
+ 541              	.LVL70:
+ 542 011a 97E7     		b	.L35
+ 543              		.cfi_endproc
+ 544              	.LFE140:
+ 546              		.comm	EEPROMDataWrite,1,1
+ 547              		.comm	EEPROMDataRead,2,2
+ 548              		.global	EEPROMAddress
+ 549              		.section	.bss.EEPROMAddress,"aw",%nobits
+ 550              		.align	1
+ 551              		.set	.LANCHOR0,. + 0
+ 554              	EEPROMAddress:
+ 555 0000 0000     		.space	2
+ 556              		.text
+ 557              	.Letext0:
+ 558              		.file 2 "c:\\gcc_toolchain\\6_2017-q1-update\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 559              		.file 3 "c:\\gcc_toolchain\\6_2017-q1-update\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 560              		.file 4 "Drivers/CMSIS/Include/core_cm7.h"
+ 561              		.file 5 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/system_stm32f7xx.h"
+ 562              		.file 6 "c:\\gcc_toolchain\\6_2017-q1-update\\arm-none-eabi\\include\\sys\\lock.h"
+ 563              		.file 7 "c:\\gcc_toolchain\\6_2017-q1-update\\arm-none-eabi\\include\\sys\\_types.h"
+ 564              		.file 8 "c:\\gcc_toolchain\\6_2017-q1-update\\lib\\gcc\\arm-none-eabi\\6.3.1\\include\\stddef.h"
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 20
+
+
+ 565              		.file 9 "c:\\gcc_toolchain\\6_2017-q1-update\\arm-none-eabi\\include\\sys\\reent.h"
+ 566              		.file 10 "Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_eeprom.h"
+ 567              		.file 11 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_def.h"
+ARM GAS  C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s 			page 21
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32746g_discovery_eeprom.c
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:18     .text.BSP_EEPROM_Init:00000000 $t
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:25     .text.BSP_EEPROM_Init:00000000 BSP_EEPROM_Init
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:77     .text.BSP_EEPROM_Init:0000003c $d
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:82     .text.BSP_EEPROM_DeInit:00000000 $t
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:89     .text.BSP_EEPROM_DeInit:00000000 BSP_EEPROM_DeInit
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:103    .text.BSP_EEPROM_TIMEOUT_UserCallback:00000000 $t
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:110    .text.BSP_EEPROM_TIMEOUT_UserCallback:00000000 BSP_EEPROM_TIMEOUT_UserCallback
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:122    .text.BSP_EEPROM_ReadBuffer:00000000 $t
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:129    .text.BSP_EEPROM_ReadBuffer:00000000 BSP_EEPROM_ReadBuffer
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:172    .text.BSP_EEPROM_ReadBuffer:00000024 $d
+                            *COM*:00000002 EEPROMDataRead
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:178    .text.BSP_EEPROM_WaitEepromStandbyState:00000000 $t
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:185    .text.BSP_EEPROM_WaitEepromStandbyState:00000000 BSP_EEPROM_WaitEepromStandbyState
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:218    .text.BSP_EEPROM_WaitEepromStandbyState:00000020 $d
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:223    .text.BSP_EEPROM_WritePage:00000000 $t
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:230    .text.BSP_EEPROM_WritePage:00000000 BSP_EEPROM_WritePage
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:288    .text.BSP_EEPROM_WritePage:00000030 $d
+                            *COM*:00000001 EEPROMDataWrite
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:294    .text.BSP_EEPROM_WriteBuffer:00000000 $t
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:301    .text.BSP_EEPROM_WriteBuffer:00000000 BSP_EEPROM_WriteBuffer
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:554    .bss.EEPROMAddress:00000000 EEPROMAddress
+C:\Users\Student\AppData\Local\Temp\ccXDZJgo.s:550    .bss.EEPROMAddress:00000000 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+EEPROM_IO_Init
+EEPROM_IO_IsDeviceReady
+EEPROM_IO_ReadData
+EEPROM_IO_WriteData
